@@ -1,10 +1,12 @@
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import 'dart:math';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:form_builder_file_picker/form_builder_file_picker.dart';
 import 'package:quizapp/services/database.dart';
 import 'package:quizapp/services/repository.dart';
 import 'package:random_string/random_string.dart';
+import 'package:file_picker/file_picker.dart';
 
 class NoteForm extends StatefulWidget
 {
@@ -20,8 +22,7 @@ class _NoteFormState extends State<NoteForm> {
   String sem;
   String module;
   String topic;
-  File sample;
-  File _image;
+  String file;
   bool isLoading = false;
   String notesId;
 
@@ -53,7 +54,8 @@ class _NoteFormState extends State<NoteForm> {
         "sem":sem,
         "subject":subject,
         "topic":topic,
-        "notesId":notesId
+        "notesId":notesId,
+        "file":""
       };
       //addNotesData(Map notesData, String notesId)
       databaseService.addNotesData(notesData, notesId).then((value) {
@@ -62,199 +64,159 @@ class _NoteFormState extends State<NoteForm> {
           _showDialogue(context);
         });
       });
+      getPdfAndUpload(notesId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    Future getImage() async {
-      // ignore: deprecated_member_use
-      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-
-      setState(() {
-        _image = image as File ;
-        print('Image Path $_image');
-      });
-    }
-
-    Future uploadPic(BuildContext context) async{
-     // String fileName = basename(_image.path);
-      FirebaseStorage storage = FirebaseStorage.instance;
-      Reference ref = storage.ref().child("image" + DateTime.now().toString());
-      UploadTask uploadTask = ref.putFile(_image);
-      uploadTask.then((res) {
-        res.ref.getDownloadURL();
-      });
-      setState(() {
-        print("Profile Picture uploaded");
-        Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-      });
-    }
 
     return Scaffold(
-          appBar: AppBar(
-            title: Text("Upload Note"),
-            centerTitle: true,
-            elevation: 0.8,
-          ),
-        body: Builder(
-        builder: (context) =>
-        Center(
+      appBar: AppBar(
+        title: Text("Upload Note"),
+        centerTitle: true,
+        elevation: 0.8,
+      ),
+      body: Builder(
+          builder: (context) =>
+              Center(
 
-        child: Form(
-              key:_formKey,
-              child: Container(
-                  padding:EdgeInsets.symmetric(vertical:16.0,horizontal:16.0),
-                        child:Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children:[
-                              DropdownButtonFormField<String>(
-                                decoration: InputDecoration(labelText: 'Course',labelStyle: TextStyle(fontFamily: 'Courgette')),
+                child: Form(
+                  key:_formKey,
+                  child: Container(
+                    padding:EdgeInsets.symmetric(vertical:16.0,horizontal:16.0),
+                    child:Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children:[
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: 'Course',labelStyle: TextStyle(fontFamily: 'Courgette')),
+                            icon: Icon(Icons.arrow_drop_down),
+                            onChanged: (val){
+                              course = val;
 
-                                icon: Icon(Icons.arrow_drop_down),
-                                onChanged: (val){
-                                  course = val;
+                            },
+                            value: course, // guard it with null if empty
+                            items: _courses.map((item) {
+                              return DropdownMenuItem(
+                                value: item,
+                                child: new Text(item),
+                              );
+                            }).toList(),
+                          ),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: 'Semester',labelStyle: TextStyle(fontFamily: 'Courgette')),
 
+                            icon: Icon(Icons.arrow_drop_down),
+                            onChanged: (val){
+                              _onSelectedSem(val,course);
+                              sem = val;
+                            },
+                            value: sem, // guard it with null if empty
+                            items: _semesters.map((item) {
+                              return DropdownMenuItem(
+                                value: item,
+                                child: new Text(item),
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(height: 5,),
+                          DropdownButtonFormField<String>(
+                            isExpanded: true,
+                            decoration: InputDecoration(labelText: 'Subject Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
+                            icon: Icon(Icons.arrow_drop_down),
+                            onChanged: (val){
+                              _onSelectedSub(val);
+                              subject = val;
+                            },
+                            value: subject, // guard it with null if empty
+                            items: _subjects.map((item) {
+                              return DropdownMenuItem(
+                                value: item,
+                                child: new Text(item),
+
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(height: 5,),
+                          DropdownButtonFormField<String>(
+                            decoration: InputDecoration(labelText: 'Module',labelStyle: TextStyle(fontFamily: 'Courgette')),
+
+                            icon: Icon(Icons.arrow_drop_down),
+                            onChanged: (val){
+                              module = val;
+                            },
+                            value: module, // guard it with null if empty
+                            items: _modules.map((item) {
+                              return DropdownMenuItem(
+                                value: item,
+                                child: new Text(item),
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(height: 5,),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: 'Topic Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
+                            validator: (value){
+                              return  value.isEmpty? 'please enter chapter name': null;
+                            },
+                            onChanged:(val){
+                              setState(() {
+                                topic = val;
+                              });
+                            },
+                          ),
+                          Spacer(),
+                          Container(
+                              padding:EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
+                              child:RaisedButton(
+                                color: Colors.lightBlue,
+                                child:Text("Upload Note"),
+
+                                onPressed: () async {
+
+                                  final form=_formKey.currentState;
+                                  if(form.validate()){
+
+
+                                    uploadNotes();
+                                    print("Yep");
+                                    form.save();
+                                    //_showDialogue(context);
+                                  }
                                 },
-                                value: course, // guard it with null if empty
-                                items: _courses.map((item) {
-                                  return DropdownMenuItem(
-                                    value: item,
-                                    child: new Text(item),
-                                  );
-                                }).toList(),
-                              ),
-
-                              DropdownButtonFormField<String>(
-                                decoration: InputDecoration(labelText: 'Semester',labelStyle: TextStyle(fontFamily: 'Courgette')),
-
-                                icon: Icon(Icons.arrow_drop_down),
-                                onChanged: (val){
-                                  _onSelectedSem(val,course);
-                                  sem = val;
-                                },
-                                value: sem, // guard it with null if empty
-                                items: _semesters.map((item) {
-                                  return DropdownMenuItem(
-                                    value: item,
-                                    child: new Text(item),
-                                  );
-                                }).toList(),
-                              ),
-                              SizedBox(height: 5,),
-                              DropdownButtonFormField<String>(
-                                isExpanded: true,
-                                decoration: InputDecoration(labelText: 'Subject Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
-
-                                icon: Icon(Icons.arrow_drop_down),
-                                onChanged: (val){
-                                  _onSelectedSub(val);
-                                  subject = val;
-                                },
-                                value: subject, // guard it with null if empty
-                                items: _subjects.map((item) {
-                                  return DropdownMenuItem(
-                                    value: item,
-                                    child: new Text(item),
-
-                                  );
-                                }).toList(),
-                              ),
-
-                              SizedBox(height: 5,),
-
-                              DropdownButtonFormField<String>(
-                                decoration: InputDecoration(labelText: 'Module',labelStyle: TextStyle(fontFamily: 'Courgette')),
-
-                                icon: Icon(Icons.arrow_drop_down),
-                                onChanged: (val){
-                                  module = val;
-                                },
-                                value: module, // guard it with null if empty
-                                items: _modules.map((item) {
-                                  return DropdownMenuItem(
-                                    value: item,
-                                    child: new Text(item),
-                                  );
-                                }).toList(),
-                              ),
-
-
-
-
-
-                              SizedBox(height: 5,),
-                              TextFormField(
-                                decoration: InputDecoration(labelText: 'Topic Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
-                                validator: (value){
-                                  return  value.isEmpty? 'please enter chapter name': null;
-                                },
-                                onChanged:(val){
-                                  setState(() {
-                                    topic = val;
-                                  });
-                                },
-                              ),
-                              /*FormBuilderFilePicker(
-                                attribute: "Document",
-                                decoration: InputDecoration(labelText: "Select File"),
-                                maxFiles: 1,
-                                multiple: false,
-                                previewImages: true,
-                                onChanged: (val) => print(val),
-                                fileExtension: "PDF",
-                                fileType: FileType.custom,
-                                selector: Row(
-                                  children: <Widget>[
-                                    Icon(Icons.file_upload),
-                                    Text('Upload',),
-                                  ],
-                                ),
-                                onFileLoading: (val) {
-                                  getPdfAndUpload();
-                                  print(val);
-                                },
-                              ),*/
-                              FloatingActionButton(
-                                onPressed:  getImage,
-                                tooltip: 'Select file',
-                                child: new Icon(Icons.sd_storage),
-                              ),
-
-
-                              Spacer(),
-                              GestureDetector(
-                                onTap: () {
-                                  uploadNotes();
-                                },
-                                child:Container(
-                                    padding:EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
-                                    child:RaisedButton(
-                                      color: Colors.lightBlue,
-                                      child:Text("Upload Note"),
-                                      onPressed: (){
-                                        final form=_formKey.currentState;
-                                        if(form.validate()){
-                                          uploadPic(context);
-                                          uploadNotes();
-                                          print("Yep");
-                                          form.save();
-                                          Navigator.pop(context);
-                                          //_showDialogue(context);
-                                        }
-                                      },
-                                    )
-                                ),
                               )
-                            ]
-                   ),
-               ),
-            ),
-          )
-        ),
+                          )
+                        ]
+                    ),
+                  ),
+                ),
+              )
+      ),
     );
 
   }
+  getPdfAndUpload(String notesId)async{
+    var rng = new Random();
+    String randomName="";
+    for (var i = 0; i < 20; i++) {
+      //generate
+      print(rng.nextInt(100));
+      randomName += rng.nextInt(100).toString();
+    }
+    File fileUrl = await FilePicker.getFile(type: FileType.custom);
+    String fileName = '${randomName}.pdf';
+    Reference storageReference = FirebaseStorage.instance
+        .ref()
+        .child(fileName);
+    UploadTask uploadTask = storageReference.putFile(fileUrl);
+    await(await uploadTask);
+    print('File Uploaded');
+    String filename;
+    filename=await storageReference.getDownloadURL();
+    print (filename);
+    databaseService.addNote(filename, notesId);
+  }
+
   _showDialogue(BuildContext context){
     Scaffold.of(context).showSnackBar(SnackBar(content:Text('Submitting Form')));
   }

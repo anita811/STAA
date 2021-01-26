@@ -25,6 +25,7 @@ class DatabaseService {
   final String uid;
   String userType;
   String userName;
+  String file;
   DatabaseService({ this.uid });
 
   Future<void> updateUserData(String name, String email, String userType) async {
@@ -118,12 +119,39 @@ class DatabaseService {
   });
   }
 
+  Future<void> addNote(String file, String notesId) async {
+    await Firebase.initializeApp();
+    print("pdf Saved");
+    await FirebaseFirestore.instance
+        .collection("notes")
+        .doc(notesId)
+        .update(
+        { "file": file}
+    )
+        .catchError((e) {
+      print(e);
+      print("Error in saving pdf");
+    });
+  }
+
   getNotesData() async{
   await Firebase.initializeApp();
   print("Getting Note Details");
   return await FirebaseFirestore.instance
       .collection("notes")
       .snapshots();
+  }
+
+  getFile(String notesId) async {
+    await Firebase.initializeApp();
+    await FirebaseFirestore.instance
+        .collection("notes")
+        .doc(notesId)
+        .get().then((doc) {
+      file = doc.data()['file'];
+    });
+    print(file);
+    return file;
   }
 
 }
