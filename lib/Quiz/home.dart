@@ -185,7 +185,7 @@ class QuizTile extends StatelessWidget {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Are you sure ?"),
-      content: Text("Are you sure to delete the quiz"),
+      content: Text("Are you sure to delete the $quizTitle"),
       actions: [
         cancelButton,
         continueButton,
@@ -215,7 +215,7 @@ class QuizTile extends StatelessWidget {
       },
       child: Container(
         margin:EdgeInsets.only(bottom: 8),
-        padding: EdgeInsets.symmetric(horizontal: 24),
+        padding: EdgeInsets.symmetric(horizontal: 6),
         height: 145,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(8),

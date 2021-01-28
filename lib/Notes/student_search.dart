@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quizapp/Notes/StudentNoteListItem.dart';
-import 'package:quizapp/Notes/studentsearch.dart';
+import 'package:quizapp/Notes/student_notes.dart';
+import 'package:quizapp/SignUp_SignIn/Login/login_screen.dart';
 import 'package:quizapp/services/database.dart';
 import 'package:quizapp/services/repository.dart';
 
@@ -20,15 +21,6 @@ class _StudentNoteState extends State<StudentNote> {
   _StudentNoteState(this.userType, this.userName, this.userEmail);
 
   final _formKey=GlobalKey<FormState>();
-  String subject,teacher;
-
-  static const  List<String> teachers = [
-    'Anuradha Sreeram',
-    'K.S Chithra',
-    'K.J Yesudas',
-    'SP Balasubramanyam',
-  ];
-
 
   static const List<String> modules =['1', '2', '3', '4', '5','6'];
 
@@ -36,17 +28,18 @@ class _StudentNoteState extends State<StudentNote> {
   DatabaseService databaseService = new DatabaseService();
   Stream notesStream;
   String course;
+  String subject;
   String sem;
-  String module=_modules[0];
+  String module;
   String topic;
-
+  String file;
   bool isLoading = false;
   String notesId;
 
   List<String> _subjects=[];
   List<String> _semesters=[];
   static const List<String> _modules =['1', '2', '3', '4', '5','6'];
-
+  static const List<String> _courses =['Civil Engineering', 'Computer Science & Engineering', 'All'];
   Repository repo = Repository();
 
   @override
@@ -102,14 +95,15 @@ class _StudentNoteState extends State<StudentNote> {
                       content: Text(useremail + ' has successfully signed out.'),
 
                     ));
-                    /* Navigator.push(
+                    Navigator.popUntil(context, (route) => false);
+                     Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
                       return LoginScreen();
                     },
                   ),
-                );*/
+                );
                   },
 
                 );
@@ -133,26 +127,30 @@ class _StudentNoteState extends State<StudentNote> {
                       children: [
                         Text("Search ",textAlign: TextAlign.center,style: TextStyle(fontWeight: FontWeight.bold,fontSize:20.0),),
                         DropdownButtonFormField<String>(
-                          decoration: InputDecoration(labelText: 'Teacher Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
-                          icon: Icon(Icons.arrow_downward),
-                          value: teacher, // guard it with null if empty
-                          items: teachers.map((item) {
+                          decoration: InputDecoration(labelText: 'Course',labelStyle: TextStyle(fontFamily: 'Courgette')),
+                          icon: Icon(Icons.arrow_drop_down),
+                          onChanged: (val){
+                            course = val;
+
+                          },
+                          validator: (value) => value == null ? 'field required' : null,
+                          value: course, // guard it with null if empty
+                          items: _courses.map((item) {
                             return DropdownMenuItem(
                               value: item,
                               child: new Text(item),
                             );
                           }).toList(),
-                          onChanged: (String newValue) => setState(() { teacher=newValue;}),
                         ),
-
                         DropdownButtonFormField<String>(
                           decoration: InputDecoration(labelText: 'Semester',labelStyle: TextStyle(fontFamily: 'Courgette')),
 
                           icon: Icon(Icons.arrow_drop_down),
                           onChanged: (val){
-                            _onSelectedSem(val);
+                            _onSelectedSem(val,course);
                             sem = val;
                           },
+                          validator: (value) => value == null ? 'field required' : null,
                           value: sem, // guard it with null if empty
                           items: _semesters.map((item) {
                             return DropdownMenuItem(
@@ -165,12 +163,12 @@ class _StudentNoteState extends State<StudentNote> {
                         DropdownButtonFormField<String>(
                           isExpanded: true,
                           decoration: InputDecoration(labelText: 'Subject Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
-
-                          icon: Icon(Icons.arrow_downward),
+                          icon: Icon(Icons.arrow_drop_down),
                           onChanged: (val){
                             _onSelectedSub(val);
                             subject = val;
                           },
+                          validator: (value) => value == null ? 'field required' : null,
                           value: subject, // guard it with null if empty
                           items: _subjects.map((item) {
                             return DropdownMenuItem(
@@ -180,18 +178,22 @@ class _StudentNoteState extends State<StudentNote> {
                             );
                           }).toList(),
                         ),
-
+                        SizedBox(height: 5,),
                         DropdownButtonFormField<String>(
-                          decoration: InputDecoration(labelText: 'Module Number',labelStyle: TextStyle(fontFamily: 'Courgette')),
-                          icon: Icon(Icons.arrow_downward),
+                          decoration: InputDecoration(labelText: 'Module',labelStyle: TextStyle(fontFamily: 'Courgette')),
+
+                          icon: Icon(Icons.arrow_drop_down),
+                          onChanged: (val){
+                            module = val;
+                          },
+                          validator: (value) => value == null ? 'field required' : null,
                           value: module, // guard it with null if empty
-                          items: modules.map((item) {
+                          items: _modules.map((item) {
                             return DropdownMenuItem(
                               value: item,
                               child: new Text(item),
                             );
                           }).toList(),
-                          onChanged: (String newValue) => setState(() { module=newValue;}),
                         ),
 
 
@@ -207,7 +209,7 @@ class _StudentNoteState extends State<StudentNote> {
                                   print("Yep");
                                   form.save();
                                   Navigator.of(context).push(new MaterialPageRoute(
-                                      builder: (context)=> new StudentSearch()));
+                                      builder: (context)=> new StudentSearch(course,subject,sem,module,topic)));
                                 }
                               },
                             )
@@ -223,11 +225,19 @@ class _StudentNoteState extends State<StudentNote> {
     );
   }
 
-  void _onSelectedSem(String value) {
+  void _onSelectedSem(String value,String course) {
     setState(() {
 
       sem = value;
-      _subjects = List.from(_subjects)..addAll(repo.getLocalBySemesterscse(value));
+      if(course =='Computer Science & Engineering'|| course=='All') {
+        _subjects = List.from(_subjects)
+          ..addAll(repo.getLocalBySemesterscse(value));
+      }
+      else if(course =='Civil Engineering' || course=='All') {
+        _subjects = List.from(_subjects)
+          ..addAll(repo.getLocalBySemestersce(value));
+      }
+
     });
   }
 

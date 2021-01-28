@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:quizapp/SignUp_SignIn/Login/login_screen.dart';
 import 'package:quizapp/services/database.dart';
 import '../drawerScreen.dart';
 import 'NoteForm.dart';
@@ -66,7 +67,6 @@ class _notesHomePageState extends State<notesHomePage>
     return Scaffold(
       drawer:SideDrawer(userType,userName,userEmail),
       resizeToAvoidBottomPadding:false,
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: RichText(
           text: TextSpan(
@@ -107,14 +107,15 @@ class _notesHomePageState extends State<notesHomePage>
                   content: Text(useremail + ' has successfully signed out.'),
 
                 ));
-               /* Navigator.push(
+                Navigator.popUntil(context, (route) => false);
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {
                       return LoginScreen();
                     },
                   ),
-                );*/
+                );
               },
 
             );

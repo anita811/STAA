@@ -93,8 +93,8 @@ class _NoteFormState extends State<NoteForm> {
                             icon: Icon(Icons.arrow_drop_down),
                             onChanged: (val){
                               course = val;
-
                             },
+                            validator: (value) => value == null ? 'field required' : null,
                             value: course, // guard it with null if empty
                             items: _courses.map((item) {
                               return DropdownMenuItem(
@@ -111,6 +111,7 @@ class _NoteFormState extends State<NoteForm> {
                               _onSelectedSem(val,course);
                               sem = val;
                             },
+                            validator: (value) => value == null ? 'field required' : null,
                             value: sem, // guard it with null if empty
                             items: _semesters.map((item) {
                               return DropdownMenuItem(
@@ -128,6 +129,7 @@ class _NoteFormState extends State<NoteForm> {
                               _onSelectedSub(val);
                               subject = val;
                             },
+                            validator: (value) => value == null ? 'field required' : null,
                             value: subject, // guard it with null if empty
                             items: _subjects.map((item) {
                               return DropdownMenuItem(
@@ -145,6 +147,7 @@ class _NoteFormState extends State<NoteForm> {
                             onChanged: (val){
                               module = val;
                             },
+                            validator: (value) => value == null ? 'field required' : null,
                             value: module, // guard it with null if empty
                             items: _modules.map((item) {
                               return DropdownMenuItem(
@@ -157,14 +160,14 @@ class _NoteFormState extends State<NoteForm> {
                           TextFormField(
                             decoration: InputDecoration(labelText: 'Topic Name',labelStyle: TextStyle(fontFamily: 'Courgette')),
                             validator: (value){
-                              return  value.isEmpty? 'please enter chapter name': null;
+                              return  value.isEmpty? 'please enter Topic name': null;
                             },
                             onChanged:(val){
                               setState(() {
                                 topic = val;
                               });
                             },
-                          ),
+                           ),
                           Spacer(),
                           Container(
                               padding:EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
@@ -211,6 +214,7 @@ class _NoteFormState extends State<NoteForm> {
     UploadTask uploadTask = storageReference.putFile(fileUrl);
     await(await uploadTask);
     print('File Uploaded');
+    Navigator.of(context).pop();
     String filename;
     filename=await storageReference.getDownloadURL();
     print (filename);

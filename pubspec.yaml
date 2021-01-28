@@ -31,6 +31,8 @@ dependencies:
   form_builder_file_picker: ^0.3.0
   firebase_storage:
   syncfusion_flutter_pdfviewer:
+  permission_handler: ^5.0.1+1
+  flutter_cached_pdfview: ^0.3.5
 
 dev_dependencies:
   flutter_test:

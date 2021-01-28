@@ -48,7 +48,7 @@ class _CreateQuizState extends State<CreateQuiz> {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-        backgroundColor: Colors.blue,
+
         appBar: AppBar(
           leading: BackButton(
             color: Colors.black54,

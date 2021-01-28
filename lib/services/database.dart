@@ -119,6 +119,14 @@ class DatabaseService {
   });
   }
 
+  Future<void> delNotesData( String notesId) async {
+    await Firebase.initializeApp();
+    await FirebaseFirestore.instance
+        .collection("quiz")
+        .doc(notesId)
+        .delete();
+  }
+
   Future<void> addNote(String file, String notesId) async {
     await Firebase.initializeApp();
     print("pdf Saved");
