@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quizapp/services/database.dart';
-
 import 'ViewPdf.dart';
+// ignore: must_be_immutable
 class NoteListItem extends StatelessWidget
 {
   final String _course;

@@ -6,6 +6,7 @@ import '../drawerScreen.dart';
 import 'NoteForm.dart';
 import 'NoteListItem.dart';
 
+// ignore: camel_case_types
 class notesHomePage extends StatefulWidget {
   final String userType,userName,userEmail;
  notesHomePage(this.userType, this.userName, this.userEmail);
@@ -14,6 +15,7 @@ class notesHomePage extends StatefulWidget {
   _notesHomePageState createState() => _notesHomePageState (this.userType, this.userName, this.userEmail);
 }
 
+// ignore: camel_case_types
 class _notesHomePageState extends State<notesHomePage>
 {
   final String userType,userName,userEmail;

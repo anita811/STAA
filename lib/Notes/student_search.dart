@@ -1,11 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:quizapp/Notes/StudentNoteListItem.dart';
 import 'package:quizapp/Notes/student_notes.dart';
 import 'package:quizapp/SignUp_SignIn/Login/login_screen.dart';
 import 'package:quizapp/services/database.dart';
 import 'package:quizapp/services/repository.dart';
-
 import '../drawerScreen.dart';
 
 class  StudentNote extends StatefulWidget
@@ -21,10 +19,6 @@ class _StudentNoteState extends State<StudentNote> {
   _StudentNoteState(this.userType, this.userName, this.userEmail);
 
   final _formKey=GlobalKey<FormState>();
-
-  static const List<String> modules =['1', '2', '3', '4', '5','6'];
-
-
   DatabaseService databaseService = new DatabaseService();
   Stream notesStream;
   String course;
@@ -35,7 +29,6 @@ class _StudentNoteState extends State<StudentNote> {
   String file;
   bool isLoading = false;
   String notesId;
-
   List<String> _subjects=[];
   List<String> _semesters=[];
   static const List<String> _modules =['1', '2', '3', '4', '5','6'];
@@ -196,8 +189,6 @@ class _StudentNoteState extends State<StudentNote> {
                           }).toList(),
                         ),
 
-
-
                         Container(
                             padding:EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
                             child:RaisedButton(
@@ -208,8 +199,9 @@ class _StudentNoteState extends State<StudentNote> {
                                 if(form.validate()){
                                   print("Yep");
                                   form.save();
+                                  print(subject);
                                   Navigator.of(context).push(new MaterialPageRoute(
-                                      builder: (context)=> new StudentSearch(course,subject,sem,module,topic)));
+                                      builder: (context)=> new StudentSearch(subject,module)));
                                 }
                               },
                             )

@@ -207,7 +207,7 @@ class _NoteFormState extends State<NoteForm> {
       randomName += rng.nextInt(100).toString();
     }
     File fileUrl = await FilePicker.getFile(type: FileType.custom);
-    String fileName = '${randomName}.pdf';
+    String fileName = '$randomName.pdf';
     Reference storageReference = FirebaseStorage.instance
         .ref()
         .child(fileName);

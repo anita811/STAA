@@ -122,7 +122,7 @@ class DatabaseService {
   Future<void> delNotesData( String notesId) async {
     await Firebase.initializeApp();
     await FirebaseFirestore.instance
-        .collection("quiz")
+        .collection("notes")
         .doc(notesId)
         .delete();
   }
@@ -148,6 +148,14 @@ class DatabaseService {
   return await FirebaseFirestore.instance
       .collection("notes")
       .snapshots();
+  }
+
+  getNotesDatabySubAndMod(String sub,String mod) async{
+    await Firebase.initializeApp();
+    print("Getting Note Details");
+    return await FirebaseFirestore.instance
+        .collection("notes").where("subject",isEqualTo: sub).where("module",isEqualTo: mod)
+        .snapshots();
   }
 
   getFile(String notesId) async {

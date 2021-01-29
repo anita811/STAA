@@ -6,54 +6,44 @@ import 'StudentNoteListItem.dart';
 class StudentSearch extends StatefulWidget
 {
 
-  // ignore: non_constant_identifier_names
-  final String _course_searched;
+
   // ignore: non_constant_identifier_names
   final String _subject_searched;
-  // ignore: non_constant_identifier_names
-  final String _semester_searched;
-  // ignore: non_constant_identifier_names
+    // ignore: non_constant_identifier_names
   final String _module_searched;
-  // ignore: non_constant_identifier_names
-  final String _topic_searched;
 
-
-  StudentSearch(this._course_searched,
-      this._subject_searched,this._semester_searched,
-      this._module_searched,this._topic_searched);
+  StudentSearch(
+      this._subject_searched,
+      this._module_searched);
 
   @override
-  _StudentSearchState createState() => _StudentSearchState(this._course_searched,
-      this._subject_searched,this._semester_searched,
-      this._module_searched,this._topic_searched);
+  _StudentSearchState createState() => _StudentSearchState(
+      this._subject_searched,
+      this._module_searched,);
 }
 
 class _StudentSearchState extends State<StudentSearch> {
 
   // ignore: non_constant_identifier_names
-  final String _course_searched;
   final String _subject_searched;
-  final String _semester_searched;
+  // ignore: non_constant_identifier_names
   final String _module_searched;
-  final String _topic_searched;
 
-
-  _StudentSearchState(this._course_searched,
-      this._subject_searched,this._semester_searched,
-      this._module_searched,this._topic_searched);
+  _StudentSearchState
+      (this._subject_searched,
+      this._module_searched);
   Stream notesStream;
   DatabaseService databaseService = new DatabaseService();
 
 
   void initState() {
-    databaseService.getNotesData().then((val) {
+    databaseService.getNotesDatabySubAndMod(_subject_searched,_module_searched).then((val) {
       setState(() {
         notesStream = val;
       });
     });
     super.initState();
   }
-  @override
   Widget notesList() {
     return Container(
       child: Column(
@@ -69,14 +59,15 @@ class _StudentSearchState extends State<StudentSearch> {
                   physics: ClampingScrollPhysics(),
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
-                    String course=snapshot.data.docs[index].data () ['course'];
-                    String subject=snapshot.data.docs[index].data()['subject'];
-                    String sem =snapshot.data.docs[index].data()['sem'];
+
+                    String subject =snapshot.data.docs[index].data()['subject'];
+
                     String module =snapshot.data.docs[index].data()['module'];
-                    String topic =snapshot.data.docs[index].data()['topic'];
-                    String file=snapshot.data.docs[index].data()['file'];
-                    if( _subject_searched==subject&& _module_searched==module){
+
+                    print("$subject-$module");
+
                       return StudentNoteListItem(
+
                         snapshot.data.docs[index].data() ['course'],
                         snapshot.data.docs[index].data()['subject'],
                         snapshot.data.docs[index].data()['sem'],
@@ -86,8 +77,8 @@ class _StudentSearchState extends State<StudentSearch> {
 
                       );
 
-                    }
-                  },);
+                   }
+                 );
             },
           ),
           SizedBox(height: 50,),

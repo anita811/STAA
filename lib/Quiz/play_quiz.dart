@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quizapp/services/database.dart';
 import 'package:quizapp/services/score.dart';
-import 'package:quizapp/widgets/widgets.dart';
 import 'package:quizapp/widgets/quiz_play_widgets.dart';
 
 class QuizPlay extends StatefulWidget {
@@ -22,7 +21,7 @@ int total = 0;
 Stream infoStream;
 
 class _QuizPlayState extends State<QuizPlay> {
-  QuerySnapshot questionSnaphot;
+  QuerySnapshot questionSnapshot;
   DatabaseService databaseService = new DatabaseService();
 
   bool isLoading = true;
@@ -30,12 +29,12 @@ class _QuizPlayState extends State<QuizPlay> {
   @override
   void initState() {
     databaseService.getQuestionData(widget.quizId).then((value) {
-      questionSnaphot = value;
-      _notAttempted = questionSnaphot.docs.length;
+      questionSnapshot = value;
+      _notAttempted = questionSnapshot.docs.length;
       _correct = 0;
       _incorrect = 0;
       isLoading = false;
-      total = questionSnaphot.docs.length;
+      total = questionSnapshot.docs.length;
       setState(() {});
       print("init don $total ${widget.quizId} ");
     });
@@ -104,23 +103,23 @@ class _QuizPlayState extends State<QuizPlay> {
           child: Column(
             children: [
               InfoHeader(
-                length: questionSnaphot.docs.length,
+                length: questionSnapshot.docs.length,
               ),
               SizedBox(
                 height: 10,
               ),
-              questionSnaphot.docs == null
+              questionSnapshot.docs == null
                   ? Container(
                 child: Center(child: Text("No Data"),),
               )
                   : ListView.builder(
-                  itemCount: questionSnaphot.docs.length,
+                  itemCount: questionSnapshot.docs.length,
                   shrinkWrap: true,
                   physics: ClampingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return QuizPlayTile(
                       questionModel: getQuestionModelFromDatasnapshot(
-                          questionSnaphot.docs[index]),
+                          questionSnapshot.docs[index]),
                       index: index,
                     );
                   }),
