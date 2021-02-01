@@ -8,7 +8,6 @@ class Home extends StatefulWidget {
   final String userType,userName,userEmail;
   const Home(this.userType,this.userName,this.userEmail) ;
 
-
   @override
   State<StatefulWidget> createState() {
     return _HomeState(this.userType,this.userName,this.userEmail);
@@ -23,7 +22,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       drawer: SideDrawer(userType,userName,userEmail),
       appBar: AppBar(
@@ -65,20 +64,41 @@ class _HomeState extends State<Home> {
         ],
       ),
       body:  Material(
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
-          margin: EdgeInsets.symmetric(vertical: 30,horizontal: 20),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20)
+        color: Colors.white,
+        child: Column(
+          children: <Widget>[ Container(
+            padding: EdgeInsets.symmetric(horizontal: 20,vertical: 15),
+            margin: EdgeInsets.symmetric(vertical: 30,horizontal: 20),
+            decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(20)
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(Icons.computer),
+                Text('Welcome to STAA   ')
+              ],
+            ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(Icons.computer),
-              Text('Welcome to STAA   ')
-            ],
-          ),
+            Spacer(),
+           Text("'Notes under an Umbrella'",style: TextStyle(
+               fontSize:20,
+               color: Colors.black,
+               fontWeight: FontWeight.w500),
+           ),
+            SizedBox(height: 6,),
+           Text("   - an aid for both faculties and students",style: TextStyle(
+               fontSize: 20,
+               color: Colors.black,
+               fontWeight: FontWeight.w500),),
+            Spacer(),
+           Image.asset(
+            "assets/20748595.jpg",
+             width: size.width * 1,
+        ),
+            Spacer(),
+          ],
         ),
       ),
 

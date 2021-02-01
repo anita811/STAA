@@ -124,7 +124,6 @@ class _StudentNoteState extends State<StudentNote> {
                           icon: Icon(Icons.arrow_drop_down),
                           onChanged: (val){
                             course = val;
-
                           },
                           validator: (value) => value == null ? 'field required' : null,
                           value: course, // guard it with null if empty
@@ -137,7 +136,6 @@ class _StudentNoteState extends State<StudentNote> {
                         ),
                         DropdownButtonFormField<String>(
                           decoration: InputDecoration(labelText: 'Semester',labelStyle: TextStyle(fontFamily: 'Courgette')),
-
                           icon: Icon(Icons.arrow_drop_down),
                           onChanged: (val){
                             _onSelectedSem(val,course);
@@ -188,7 +186,6 @@ class _StudentNoteState extends State<StudentNote> {
                             );
                           }).toList(),
                         ),
-
                         Container(
                             padding:EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
                             child:RaisedButton(
@@ -211,7 +208,6 @@ class _StudentNoteState extends State<StudentNote> {
                   ),
                 )
             ),
-
           ),
         )
     );
@@ -236,5 +232,4 @@ class _StudentNoteState extends State<StudentNote> {
   void _onSelectedSub(String value) {
     setState(() => subject = value);
   }
-
 }

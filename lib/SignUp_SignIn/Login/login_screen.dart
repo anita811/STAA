@@ -5,7 +5,7 @@ import 'package:quizapp/SignUp_SignIn/Signup/signup_screen.dart';
 import 'package:quizapp/home.dart';
 import 'package:quizapp/services/database.dart';
 import 'file:///C:/Users/User/AndroidStudioProjects/quizapp/lib/widgets/custom_alert_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../constants.dart';
 import 'background.dart';
 
@@ -193,8 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                              userType=await DatabaseService(uid: user.uid).getuserType();
                              userName=await DatabaseService(uid: user.uid).getuserName();
                              if (user != null) {
-                               SharedPreferences prefs = await SharedPreferences.getInstance();
-                               prefs.setString('displayName', user.displayName);
+
                                email=_emailController.text;
                                _emailController.text = "";
                                _passwordController.text = "";

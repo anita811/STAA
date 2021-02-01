@@ -101,7 +101,7 @@ class NoteListItem extends StatelessWidget
                             color: Colors.black,
                             fontWeight: FontWeight.w500),
                       ),
-                      SizedBox(height: 4,),
+
                       Text('Module $_module - $_topic',
                         style: TextStyle(
                             fontSize: 13,
