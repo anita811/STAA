@@ -4,7 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:quizapp/SignUp_SignIn/Signup/signup_screen.dart';
 import 'package:quizapp/home.dart';
 import 'package:quizapp/services/database.dart';
-import 'file:///C:/Users/User/AndroidStudioProjects/quizapp/lib/widgets/custom_alert_dialog.dart';
+import 'package:quizapp/widgets/custom_alert_dialog.dart';
+
 
 import '../../constants.dart';
 import 'background.dart';

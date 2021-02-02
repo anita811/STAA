@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:quizapp/Notes/student_notes.dart';
@@ -88,17 +90,16 @@ class _StudentNoteState extends State<StudentNote> {
                       content: Text(useremail + ' has successfully signed out.'),
 
                     ));
-                    Navigator.popUntil(context, (route) => false);
-                     Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return LoginScreen();
-                    },
-                  ),
-                );
+                    Timer(Duration(seconds: 1), () {
+                      // 1s over, navigate to a new page
+                      Navigator.of(context).popUntil((route) => false);
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return LoginScreen();
+                        },
+                      ),);
+                    });
                   },
-
                 );
               })
             ],
@@ -106,10 +107,6 @@ class _StudentNoteState extends State<StudentNote> {
           body:Container(
             padding: EdgeInsets.all(5),
             margin: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              border: Border.all(color:Colors.blue,width: 1.5),
-              borderRadius: BorderRadius.circular(10.0),
-            ),
             child:Builder(
                 builder:(context)=>Form(
                   key: _formKey,

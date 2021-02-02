@@ -49,11 +49,14 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "WELCOME!!!",
+                "WELCOME TO STAA !!!",
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: size.height * 0.05),
-              SizedBox(height: size.height * 0.05),
+              Image.asset(
+                "assets/4195199.jpg",
+                width: size.width * 1,
+              ),
+
               RoundedButton(
                 text: "LOGIN",
                 press: () {
