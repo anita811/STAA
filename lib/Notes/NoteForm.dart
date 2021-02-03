@@ -28,7 +28,7 @@ class _NoteFormState extends State<NoteForm> {
 
   List<String> _subjects=[];
   List<String> _semesters=[];
-  static const List<String> _modules =['1', '2', '3', '4', '5','6'];
+  static const List<String> _modules =['1', '2', '3', '4', '5','6','Question Paper'];
   static const List<String> _courses =['Civil Engineering', 'Computer Science & Engineering', 'All'];
 
   Repository repo = Repository();

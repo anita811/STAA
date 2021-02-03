@@ -61,11 +61,11 @@ class _StudentSearchState extends State<StudentSearch> {
                   itemBuilder: (context, index) {
 
                     String subject =snapshot.data.docs[index].data()['subject'];
-
                     String module =snapshot.data.docs[index].data()['module'];
 
                     print("$subject-$module");
 
+                    if(module==_module_searched) {
                       return StudentNoteListItem(
 
                         snapshot.data.docs[index].data() ['course'],
@@ -76,6 +76,7 @@ class _StudentSearchState extends State<StudentSearch> {
                         snapshot.data.docs[index].data()['file'],
 
                       );
+                    }
 
                    }
                  );
